@@ -40,15 +40,19 @@ app.post("/render", async (req, res) => {
 
     const cmd = `
     ffmpeg -y \
-    -stream_loop -1 -i ${videoPath} \
-    -i ${audioPath} \
-    -filter_complex "[0:v]scale=720:1280,setsar=1[v];[v]drawtext=text='${safeText}':fontcolor=white:fontsize=36:x=(w-text_w)/2:y=h-150:box=1:boxcolor=black@0.5[vout]" \
+    -stream_loop -1 -i input.mp4 \
+    -i input.mp3 \
+    -filter_complex "[0:v]scale=480:854,setsar=1[v];[v]drawtext=text='TEXT':fontcolor=white:fontsize=24:x=(w-text_w)/2:y=h-100:box=1:boxcolor=black@0.5[vout]" \
     -map "[vout]" \
     -map 1:a \
     -shortest \
+    -r 24 \
+    -preset ultrafast \
+    -crf 28 \
+    -threads 1 \
     -c:v libx264 \
     -c:a aac \
-    ${outputPath}
+    output.mp4
     `;
 
     exec(cmd, (err) => {
